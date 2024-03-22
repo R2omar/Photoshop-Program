@@ -101,9 +101,12 @@ int main()
 
     while(true)
     {
-        cout << "Pls enter colored image name to turn to gray scale: ";
-        cin >> filename;
-        Image image(filename);
+        if(!isValidFilename(filename)){
+            
+            cout << "Pls enter colored image name to turn to gray scale: ";
+            cin >> filename;
+            Image image(filename);
+        }
         cout << "Choose an operation:\n";
         cout << "1. Grayscale Conversion\n";
         cout << "2. Black and White Conversion\n";
