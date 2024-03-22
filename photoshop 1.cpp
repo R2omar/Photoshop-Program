@@ -101,7 +101,7 @@ int main()
 
     while(true)
     {
-        if(!isValidFilename(filename)){
+        while(!isValidFilename(filename)){
             
             cout << "Pls enter colored image name to turn to gray scale: ";
             cin >> filename;
