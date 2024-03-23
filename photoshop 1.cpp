@@ -118,6 +118,52 @@ Image Black_and_White(string filename){
     }
     return image2 ;
  }
+Image blackImage(string filename){
+    Image image(filename);
+    // Convert to grayscale
+    for (int i = 0; i < image.width; ++i) {
+        for (int j = 0; j < image.height; ++j) {
+            unsigned int avg = 0;
+            for (int k = 0; k < 3; ++k) {
+                avg += image(i, j, k);
+            }
+            avg = static_cast<unsigned int>(static_cast<float>(avg) / 3.0f);
+            for (int k = 0; k < 3; ++k) {
+                image(i, j, k) = avg;
+            }
+        }
+    }
+    // Apply threshold to create black and white image
+    for (int i = 0; i < image.width; ++i) {
+        for (int j = 0; j < image.height; ++j) {
+            unsigned char color = image(i, j, 0) <= 128 ? 0 : 255;
+            for (int k = 0; k < 3; ++k) {
+                image(i, j, k) = color;
+            }
+        }
+    }
+    // Create a new image for the border effect
+    Image image2(image.width, image.height);
+    // Apply border effect
+    for (int i = 1; i < image.width - 1; ++i) {
+        for (int j = 1; j < image.height - 1; ++j) {
+            for (int k = 0; k < 3; ++k) {
+                // Check surrounding pixels for border effect
+                if ((image(i-1,j,k)==0 && image(i+1,j,k)==255) || (image(i,j-1,k)==0 && image(i,j+1,k)==255)) {
+                    image2(i, j, 0) = 0;
+                    image2(i, j, 1) = 0;
+                    image2(i, j, 2) = 0;
+                    break;
+                } else {
+                    image2(i, j, k) = 255;
+                }
+            }
+        }
+    }
+    return image2;
+}
+
+
 
 int main()
 {
@@ -137,6 +183,7 @@ int main()
         cout << "2. Black and White Conversion\n";
         cout << "3. Invert Image\n";
         cout << "4. RoundImage\n";
+        cout << "5. BlackImage\n";
         cin>>ch;
         if(ch==1)
         {
@@ -198,6 +245,19 @@ int main()
                 cout << "and specify extension .jpg, .bmp, .png, .tga: ";
                 cin >> filename1;
                 round_Image.saveImage(filename1);
+                }
+          
+        }
+        else if (ch==5){
+            Image black_Image=blackImage(filename);
+            cout << "you went 1)save or 2)not";
+            cin>> num;
+            if(num==1){
+                num=0;
+                cout << "Pls enter image name to store new image\n";
+                cout << "and specify extension .jpg, .bmp, .png, .tga: ";
+                cin >> filename1;
+                black_Image.saveImage(filename1);
                 }
           
         }
