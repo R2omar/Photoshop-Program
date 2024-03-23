@@ -104,10 +104,10 @@ Image Black_and_White(string filename){
 
             for (int k = 0; k < 3; ++k)
             {
-                image2(i, j, 0) = image(image.width-i, image.height-j, 0);
-                image2(i, j, 1) = image(image.width-i,image.height- j, 1);
-                image2(i, j, 2) = image(image.width-i, image.height-j, 2); // Accumulate pixel values
-                image2(image.width-i, image.height-j, k)=image(i, j, k);
+                image2(i, j, 0) = image(image.width-i, j, 0);
+                image2(i, j, 1) = image(image.width-i, j, 1);
+                image2(i, j, 2) = image(image.width-i, j, 2); // Accumulate pixel values
+                image2(image.width-i,j, k)=image(i, j, k);
             }
 
             // Calculate average
@@ -118,6 +118,31 @@ Image Black_and_White(string filename){
     }
     return image2 ;
  }
+Image roundImage2(string filename){
+    Image image(filename);
+    Image image2(image.width,image.height);
+    for (int i = 0; i < image.width; ++i)
+    {
+        for (int j = 0; j < image.height; ++j)
+        {
+            // Initialize average value
+
+            for (int k = 0; k < 3; ++k)
+            {
+                image2(i, j, 0) = image(i, image.height-j, 0);
+                image2(i, j, 1) = image(i,image.height- j, 1);
+                image2(i, j, 2) = image(i,image.height- j, 2); // Accumulate pixel values
+                image2(i,image.height-j, k)=image(i, j, k);
+            }
+
+            // Calculate average
+
+            // Set all channels to the average value
+
+        }
+    }
+    return image2 ;
+}
 Image blackImage(string filename){
     Image image(filename);
     // Convert to grayscale
@@ -236,6 +261,11 @@ int main()
 
         }
         else if (ch==4){
+            int ch2=0;
+            cout << "1.RoundImage\n";
+            cout << "2.RoundImage2\n";
+            cin>>ch2;
+            if(ch2==1){
             Image round_Image=roundImage(filename);
             cout << "you went 1)save or 2)not";
             cin>> num;
@@ -245,7 +275,19 @@ int main()
                 cout << "and specify extension .jpg, .bmp, .png, .tga: ";
                 cin >> filename1;
                 round_Image.saveImage(filename1);
-                }
+                }}
+            else if(ch2==2){
+                Image round_Image2=roundImage2(filename);
+            cout << "you went 1)save or 2)not";
+            cin>> num;
+            if(num==1){
+                num=0;
+                cout << "Pls enter image name to store new image\n";
+                cout << "and specify extension .jpg, .bmp, .png, .tga: ";
+                cin >> filename1;
+                round_Image2.saveImage(filename1);
+            }
+            }
           
         }
         else if (ch==5){
