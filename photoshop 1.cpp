@@ -92,7 +92,32 @@ Image Black_and_White(string filename){
         }
     }
     return image ;
+ }
+ Image roundImage(string filename){
+    Image image(filename);
+    Image image2(image.width,image.height);
+    for (int i = 0; i < image.width; ++i)
+    {
+        for (int j = 0; j < image.height; ++j)
+        {
+            // Initialize average value
+
+            for (int k = 0; k < 3; ++k)
+            {
+                image2(i, j, 0) = image(image.width-i, image.height-j, 0);
+                image2(i, j, 1) = image(image.width-i,image.height- j, 1);
+                image2(i, j, 2) = image(image.width-i, image.height-j, 2); // Accumulate pixel values
+                image2(image.width-i, image.height-j, k)=image(i, j, k);
+            }
+
+            // Calculate average
+
+            // Set all channels to the average value
+
+        }
     }
+    return image2 ;
+ }
 
 int main()
 {
@@ -101,16 +126,17 @@ int main()
 
     while(true)
     {
-        while(!isValidFilename(filename)){
-            
+        //if(!isValidFilename(filename)){
+
             cout << "Pls enter colored image name to turn to gray scale: ";
             cin >> filename;
             Image image(filename);
-        }
+       // }
         cout << "Choose an operation:\n";
         cout << "1. Grayscale Conversion\n";
         cout << "2. Black and White Conversion\n";
         cout << "3. Invert Image\n";
+        cout << "4. RoundImage\n";
         cin>>ch;
         if(ch==1)
         {
@@ -161,6 +187,19 @@ int main()
                     invert_Image.saveImage(filename1);
             }
 
+        }
+        else if (ch==4){
+            Image round_Image=roundImage(filename);
+            cout << "you went 1)save or 2)not";
+            cin>> num;
+            if(num==1){
+                num=0;
+                cout << "Pls enter image name to store new image\n";
+                cout << "and specify extension .jpg, .bmp, .png, .tga: ";
+                cin >> filename1;
+                round_Image.saveImage(filename1);
+                }
+          
         }
 
     }
