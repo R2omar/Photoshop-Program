@@ -257,21 +257,18 @@ Image Black_and_White(string filename){
  }
 Image roundImage2(string filename){
     Image image(filename);
-    Image image2(image.width,image.height);
+    Image image2(image.width, image.height);
     for (int i = 0; i < image.width; ++i)
     {
         for (int j = 0; j < image.height; ++j)
         {
             for (int k = 0; k < 3; ++k)
             {
-                image2(i, j, 0) = image(i, image.height-j, 0);
-                image2(i, j, 1) = image(i,image.height- j, 1);
-                image2(i, j, 2) = image(i,image.height- j, 2); // Accumulate pixel values
-                image2(i,image.height-j, k)=image(i, j, k);
+                image2(i, j, k) = image( i , image.height - j - 1, k);
             }
         }
     }
-    return image2 ;
+    return image2;
 }
 Image Darken_Image(string filename){
     Image Darken(filename);
