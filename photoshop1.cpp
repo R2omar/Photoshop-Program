@@ -240,24 +240,39 @@ Image Black_and_White(string filename){
  Image roundImage(string filename){
     Image image(filename);
     Image image2(image.width,image.height);
-    for (int i = 0; i < image.width; ++i)
+    if (image.width % 2 == 1){
+        for (int i = 0; i < image.width; ++i)
+    {
+
+        for (int j = 0; j < image.height; ++j)
+        {
+            for (int k = 0; k < 3; ++k)
+            {
+                image2(i, j, k) = image(image.width- i -1, j, k);
+            }
+        }
+    }
+    }
+    else {
+        for (int i = 0; i < image.width; ++i)
     {
         for (int j = 0; j < image.height; ++j)
         {
             for (int k = 0; k < 3; ++k)
             {
-                image2(i, j, 0) = image(image.width-i, j, 0);
-                image2(i, j, 1) = image(image.width-i, j, 1);
-                image2(i, j, 2) = image(image.width-i, j, 2); // Accumulate pixel values
-                image2(image.width-i,j, k)=image(i, j, k);
+                image2(i, j, k) = image( image.width -i , j, k);
             }
         }
     }
+    }
+
     return image2 ;
- }
+}
 Image roundImage2(string filename){
     Image image(filename);
     Image image2(image.width, image.height);
+    if (image.height % 2 == 1){
+
     for (int i = 0; i < image.width; ++i)
     {
         for (int j = 0; j < image.height; ++j)
@@ -267,6 +282,19 @@ Image roundImage2(string filename){
                 image2(i, j, k) = image( i , image.height - j - 1, k);
             }
         }
+    }
+    }
+    else {
+        for (int i = 0; i < image.width; ++i)
+    {
+        for (int j = 0; j < image.height; ++j)
+        {
+            for (int k = 0; k < 3; ++k)
+            {
+                image2(i, j, k) = image( i , image.height - j, k);
+            }
+        }
+    }
     }
     return image2;
 }
