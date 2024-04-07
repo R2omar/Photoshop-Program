@@ -616,7 +616,7 @@ Image& Merge_Images(string filename1, string filename2) {
             Image First_Image_edit = resizeImage(filename1, max(First_Image.width, second_Image.width), max(First_Image.height, second_Image.height));
             Image second_Image_edit = resizeImage(filename2, max(First_Image.width, second_Image.width), max(First_Image.height, second_Image.height));
             // Create a new image to store the merged result
-            static Image New_Image(First_Image.width, First_Image.height);
+            static Image New_Image(First_Image_edit.width, First_Image_edit.height);
             // Merge the resized images by averaging pixel values
             for (int i = 0; i < New_Image.width; ++i) {
                 for (int j = 0; j < New_Image.height; ++j) {
