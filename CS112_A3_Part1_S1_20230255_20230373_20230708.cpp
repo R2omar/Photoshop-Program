@@ -9,13 +9,14 @@
     11410120230373@stud.cu.edu.eg
     11410120230708@stud.cu.edu.eg
 */
-// ID1: 20230255 - do {grayscale onversion filter,Dark and light filter}
-// ID2: 20230373 – do {Black and white filter,flip Horizontal and vertical filter}
-// ID3: 20230708 – do {inverse filter}
+// ID1: 20230255 - do {grayscale onversion filter,Dark and light filter,Detect Image Edges,Merge,Purple}
+// ID2: 20230373 - do {Black and white filter,flip Horizontal and vertical filter,Resize,Crop}
+// ID3: 20230708 - do {inverse filter}
 #include <iostream>
 #include "Image_Class.h"
 #include<cstring>
 #include<string>
+#include <cstdlib>
 using namespace std;
 // Function prototypes for various image Filters functions
 Image Grayscale_Conversion(string filename);
@@ -25,6 +26,11 @@ Image flip_horizontal(string filename);
 Image flip_vertical(string filename);
 Image Darken_Image(string filename);
 Image light_Image(string filename);
+Image resizeImage( string filename, int newWidth, int newHeight);
+Image crop_image(string filename, int X, int Y, int cropWidth, int cropHeight);
+Image Detect_Image_Edges(string filename);
+Image& Merge_Images(string filename1 ,string filename2 );
+Image Purple_Image(string filename);
 
 string loading_image_validation(string image_name,Image image){
     while(true) {           // Loop to handle invalid input for image loading
@@ -40,6 +46,7 @@ string loading_image_validation(string image_name,Image image){
             }
         }
 }
+
 // Function to validate user input choice
 int choice_validation(int choice, int limit, istream& cin) {
     while(true) {
@@ -64,26 +71,39 @@ int main() {
     string image_name, new_image_name;
     int filter_choice = 0, save_choice = 0;
     cout << "\"Welcome to our Photoshop Program\"\n";   // Displaying welcome message
+    cout << "Please enter Your image that you want to Edit it : ";
+    cin >> image_name;      // Asking user for the image name
+    Image image;            // Creating an object of Image class
+    image_name = loading_image_validation(image_name,image);
+    image.loadNewImage(image_name);
     while(true) {   // Main loop for the program
-        cout << "Please enter Your image that you want to Edit it : ";
-        cin >> image_name;      // Asking user for the image name
-        Image image;            // Creating an object of Image class
-        image_name = loading_image_validation(image_name,image);
-        image.loadNewImage(image_name);
+
         // make user choose a filter
-        cout << "What filter do you want to use?\n";
-        cout << "1)Grayscale Conversion\n";
-        cout << "2)Black and White Conversion\n";
-        cout << "3)Invert Image\n";
-        cout << "4)Round Image\n";
-        cout << "5)Darken and Lighten Image\n";
-        cout << "Choose from 1 to 5: ";
-
+        cout << "What do you want to do?\n";
+        cout << "1)Load New Image\n";
+        cout << "2)Grayscale Conversion\n";
+        cout << "3)Black and White Conversion\n";
+        cout << "4)Invert Image\n";
+        cout << "5)Flip Image\n";
+        cout << "6)Darken and Lighten Image\n";
+        cout << "7)Resizing Images\n";
+        cout << "8)Crop images\n";
+        cout << "9)Detect Image Edges\n";
+        cout << "10)Merge Images\n";
+        cout << "11)Purple_Image\n";
+        cout << "12)Exit\n";
+        cout << "Choose from 1 to 12: ";
         cin >> filter_choice;       // Getting user's filter choice
-        filter_choice = choice_validation(filter_choice, 5, cin); // Validating the choice
-
+        filter_choice = choice_validation(filter_choice, 12, cin); // Validating the choice
+        if(filter_choice == 1){
+            cout << "Please enter Your image that you want to Edit it : ";
+            cin >> image_name;      // Asking user for the image name
+            Image image;            // Creating an object of Image class
+            image_name = loading_image_validation(image_name,image);
+            image.loadNewImage(image_name);
+        }
         // Handling different filter choices
-        if(filter_choice == 1) {
+        else if(filter_choice == 2) {
             // Applying Grayscale Conversion filter
             Image grayscale_Conversion = Grayscale_Conversion(image_name);
             // Asking user if they want to save the edited image
@@ -94,11 +114,12 @@ int main() {
                 cout << "Please enter image name to store new image\n";
                 cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
                 cin >> new_image_name;  // Getting the name for the new image
+                //save_image_validation( new_image_name,grayscale_Conversion);
                 grayscale_Conversion.saveImage(new_image_name);    // Saving the edited image
-                system(new_image_name.c_str()); // To show the image without searching for it
+              (void)system(new_image_name.c_str()); // To show the image without searching for it
             }
         }
-        else if (filter_choice == 2) {
+        else if (filter_choice == 3) {
             // Applying Black and White Conversion filter
             Image black_and_White = Black_and_White(image_name);
             // Asking user if they want to save the edited image
@@ -109,11 +130,13 @@ int main() {
                 cout << "Please enter image name to store new image\n";
                 cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
                 cin >> new_image_name;  // Getting the name for the new image
+                //save_image_validation( new_image_name,black_and_White);
                 black_and_White.saveImage(new_image_name);    // Saving the edited image
-                system(new_image_name.c_str()); // To show the image without searching for it
+
+                 (void)system(new_image_name.c_str());// To show the image without searching for it
             }
         }
-        else if(filter_choice == 3) {
+        else if(filter_choice == 4) {
             // Invert Image filter
             Image invert_Image = InvertImage(image_name);   // Applying Invert Image filter
             // Asking user if they want to save the edited image
@@ -124,11 +147,12 @@ int main() {
                 cout << "Please enter image name to store new image\n";
                 cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
                 cin >> new_image_name;  // Getting the name for the new image
+                //save_image_validation( new_image_name,invert_Image);
                 invert_Image.saveImage(new_image_name);    // Saving the edited image
-                system(new_image_name.c_str()); // To show the image without searching for it
+              (void)system(new_image_name.c_str());// To show the image without searching for it
             }
         }
-        else if (filter_choice == 4){    // Handling RoundImage filters
+        else if (filter_choice == 5){    // Handling RoundImage filters
             int flip_choice = 0;   // Variable to store user's choice for RoundImage type
             cout << "What kind do you want to use?\n";  // Prompting user to choose type of RoundImage
             cout << "1)Flip Horizontally\n";
@@ -146,8 +170,9 @@ int main() {
                     cout << "Please enter image name to store new image\n";
                     cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
                     cin >> new_image_name;  // Getting the name for the new image
+                    //save_image_validation( new_image_name,round_Image);
                     round_Image.saveImage(new_image_name);    // Saving the edited image
-                    system(new_image_name.c_str()); // To show the image without searching for it
+                     (void)system(new_image_name.c_str()); // To show the image without searching for it
                 }
             }
             else if(flip_choice == 2) {    // If user chooses RoundImage2
@@ -160,12 +185,13 @@ int main() {
                     cout << "Please enter image name to store new image\n";
                     cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
                     cin >> new_image_name;  // Getting the name for the new image
+                    //save_image_validation( new_image_name,round_Image2);
                     round_Image2.saveImage(new_image_name);   // Saving the edited image
-                    system(new_image_name.c_str()); // To show the image without searching for it
+                  (void)system(new_image_name.c_str());// To show the image without searching for it
                 }
             }
         }
-        else if (filter_choice == 5) { // Handling Darken and Lighten Image filters
+        else if (filter_choice == 6) { // Handling Darken and Lighten Image filters
             int kind_choice = 0;    // Variable to store user's choice for Darken or Lighten
             cout << "Do you want Dark or Light?\n";   // Prompting user to choose Dark or Light
             cout << "1)Darken Image\n";
@@ -183,8 +209,9 @@ int main() {
                     cout << "Please enter image name to store new image\n";
                     cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
                     cin >> new_image_name;  // Getting the name for the new image
+                    //save_image_validation( new_image_name,dark);
                     dark.saveImage(new_image_name); // Saving the edited image
-                    system(new_image_name.c_str()); // To show the image without searching for it
+                  (void)system(new_image_name.c_str());// To show the image without searching for it
                 }
             }
             else if ( kind_choice == 2) {  // If user chooses Lighten Image
@@ -197,12 +224,114 @@ int main() {
                     cout << "Please enter image name to store new image\n";
                     cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
                     cin >> new_image_name;  // Getting the name for the new image
+                    //save_image_validation( new_image_name,light);
                     light.saveImage(new_image_name);    // Saving the edited image
-                    system(new_image_name.c_str()); // To show the image without searching for it
+                  (void)system(new_image_name.c_str()); // To show the image without searching for it
                 }
             }
         }
-
+         else if(filter_choice == 7) {
+            int w,h;
+            cout << "input the new width : ";
+            cin >> w;
+            cout<< "input the new height : ";
+            cin >> h;
+            // Applying Grayscale Conversion filter
+            Image grayscale_Conversion = resizeImage(image_name, w, h);
+            // Asking user if they want to save the edited image
+            cout << "Do you want to save it or not?\n1)Save\n2)Not\nChoose 1 or 2: ";
+            cin >> save_choice;     // Getting user's choice
+            save_choice = choice_validation(save_choice, 2, cin); // Validating the choice
+            if(save_choice == 1) {  // If user chooses to save
+                cout << "Please enter image name to store new image\n";
+                cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
+                cin >> new_image_name;  // Getting the name for the new image
+                //save_image_validation( new_image_name,grayscale_Conversion);
+                grayscale_Conversion.saveImage(new_image_name);    // Saving the edited image
+              (void)system(new_image_name.c_str()); // To show the image without searching for it
+            }
+        }
+        else if(filter_choice == 8) {
+            int w,h,x,y;
+            cout << "input x : ";
+            cin >> x;
+            cout<< "input y : ";
+            cin >> y;
+            cout << "input the new width : ";
+            cin >> w;
+            cout<< "input the new height : ";
+            cin >> h;
+            // Applying Grayscale Conversion filter
+            Image grayscale_Conversion = crop_image(image_name,x ,y , w, h);
+            // Asking user if they want to save the edited image
+            cout << "Do you want to save it or not?\n1)Save\n2)Not\nChoose 1 or 2: ";
+            cin >> save_choice;     // Getting user's choice
+            save_choice = choice_validation(save_choice, 2, cin); // Validating the choice
+            if(save_choice == 1) {  // If user chooses to save
+                cout << "Please enter image name to store new image\n";
+                cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
+                cin >> new_image_name;  // Getting the name for the new image
+                //save_image_validation( new_image_name,grayscale_Conversion);
+                grayscale_Conversion.saveImage(new_image_name);    // Saving the edited image
+              (void)system(new_image_name.c_str()); // To show the image without searching for it
+            }
+        }
+        else if(filter_choice == 9) {
+            // Applying Grayscale Conversion filter
+            Image Detect_image = Detect_Image_Edges(image_name);
+            // Asking user if they want to save the edited image
+            cout << "Do you want to save it or not?\n1)Save\n2)Not\nChoose 1 or 2: ";
+            cin >> save_choice;     // Getting user's choice
+            save_choice = choice_validation(save_choice, 2, cin); // Validating the choice
+            if(save_choice == 1) {  // If user chooses to save
+                cout << "Please enter image name to store new image\n";
+                cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
+                cin >> new_image_name;  // Getting the name for the new image
+                //save_image_validation( new_image_name,grayscale_Conversion);
+                Detect_image.saveImage(new_image_name);    // Saving the edited image
+              (void)system(new_image_name.c_str()); // To show the image without searching for it
+            }
+        }
+        else if(filter_choice == 10) {
+            string filename2;
+            cout << "Please enter The second image that you want to Merge it : ";
+            cin >> filename2;
+            Image Test;            // Creating an object of Image class
+            filename2 = loading_image_validation(filename2,Test); // validate the second image's name
+            Image Merge = Merge_Images(image_name,filename2);
+            // Asking user if they want to save the edited image
+            cout << "Do you want to save it or not?\n1)Save\n2)Not\nChoose 1 or 2: ";
+            cin >> save_choice;     // Getting user's choice
+            save_choice = choice_validation(save_choice, 2, cin); // Validating the choice
+            if(save_choice == 1) {  // If user chooses to save
+                cout << "Please enter image name to store new image\n";
+                cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
+                cin >> new_image_name;  // Getting the name for the new image
+                //save_image_validation( new_image_name,grayscale_Conversion);
+                Merge.saveImage(new_image_name);    // Saving the edited image
+              (void)system(new_image_name.c_str()); // To show the image without searching for it
+            }
+        }
+        else if(filter_choice == 11) {
+            // Applying Grayscale Conversion filter
+            Image Purple = Purple_Image(image_name);
+            // Asking user if they want to save the edited image
+            cout << "Do you want to save it or not?\n1)Save\n2)Not\nChoose 1 or 2: ";
+            cin >> save_choice;     // Getting user's choice
+            save_choice = choice_validation(save_choice, 2, cin); // Validating the choice
+            if(save_choice == 1) {  // If user chooses to save
+                cout << "Please enter image name to store new image\n";
+                cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
+                cin >> new_image_name;  // Getting the name for the new image
+                //save_image_validation( new_image_name,grayscale_Conversion);
+                Purple.saveImage(new_image_name);    // Saving the edited image
+              (void)system(new_image_name.c_str()); // To show the image without searching for it
+            }
+        }
+        else if (filter_choice == 12){
+            cout << "\"Thank you for using our program\"";
+            break;
+        }
     }
     return 0;
 }
@@ -290,29 +419,19 @@ Image flip_horizontal(string filename){
 Image flip_vertical(string filename){
     Image image(filename);  // Create an image object with the provided filename
     Image image2(image.width, image.height);  // Create a new image object to store the mirrored image
-    // Check if the height of the image is odd
-    if (image.height % 2 == 1){
-        // Mirror the image vertically
-        for (int i = 0; i < image.width; ++i) {
-            for (int j = 0; j < image.height; ++j) {
-                for (int k = 0; k < 3; ++k) {
-                    image2(i, j, k) = image(i, image.height - j - 1, k);
-                }
+
+    // Mirror the image vertically
+    for (int i = 0; i < image.width; ++i) {
+        for (int j = 0; j < image.height; ++j) {
+            for (int k = 0; k < 3; ++k) {
+                image2(i, j, k) = image(i, image.height - j - 1, k);
             }
         }
     }
-    else {  // If the height of the image is even
-        // Mirror the image vertically
-        for (int i = 0; i < image.width; ++i) {
-            for (int j = 0; j < image.height; ++j) {
-                for (int k = 0; k < 3; ++k) {
-                    image2(i, j, k) = image(i, image.height - j, k);
-                }
-            }
-        }
-    }
+
     return image2;  // Return the vertically mirrored image
 }
+
 // Function to darken an image
 Image Darken_Image(string filename){
     Image Darken(filename);    // Create an image object with the provided filename
@@ -356,4 +475,167 @@ Image light_Image(string filename){
     }
     return light; // Return the lightened image
 }
+Image resizeImage( string filename, int newWidth, int newHeight) {
+    Image originalImage(filename);
+
+    Image resizedImage(newWidth, newHeight); // Initialized with newWidth and newHeight
+
+    float widthRatio = (float)originalImage.width / newWidth;
+    float heightRatio = (float)originalImage.height / newHeight;
+
+    for (int i = 0; i < newWidth; ++i) {
+        for (int j = 0; j < newHeight; ++j) {
+            int originalX = (int)(i * widthRatio);
+
+            int originalY = (int)(j * heightRatio);
+            for (int k = 0; k < 3; ++k) {
+                resizedImage.setPixel(i, j, k, originalImage.getPixel(originalX, originalY, k));
+            }
+        }
+    }
+    return resizedImage;
+}
+Image crop_image(string filename, int X, int Y, int cropWidth, int cropHeight) {
+    Image image(filename);  // Create an image object with the provided filename
+    Image cropped(cropWidth, cropHeight);  // Create a new image object to store the cropped image
+
+    // Calculate the top-left corner coordinates for cropping
+
+
+    // Copy the specified portion of the image
+    for (int i =0 ; i < cropWidth; ++i) {
+        for (int j = 0; j < cropHeight; ++j) {
+            for (int k = 0; k < 3; ++k) {
+                cropped(i, j, k) = image(X + i, Y + j, k);
+            }
+        }
+    }
+
+    return cropped;  // Return the cropped image
+}
+Image Detect_Image_Edges(string filename) {
+    // Convert the input image to black and white
+    Image image = Black_and_White(filename);
+
+    // Create a new image with the same dimensions as the input image
+    Image new_image(image.width, image.height);
+
+    // Iterate over each pixel in the image (except the last row and column)
+    for (int i = 0; i < image.width; i++) {
+        for (int j = 0; j < image.height; j++) {
+            // Set the RGB values of each pixel in the new image to white (255)
+            for (int k = 0; k < 3; k++) {
+                new_image(i, j, k) = 255;
+            }
+        }
+    }
+
+    // Check for vertical edges between adjacent pixels and modify the new image accordingly
+    for (int i = 0; i < image.width - 1; i++) {
+        for (int j = 0; j < image.height - 1; j++) {
+            for (int k = 0; k < 3; k++) {
+                if (image(i, j, k) == 255 && image(i, j + 1, k) == 0) {
+                    new_image(i, j + 1, k) = 0;
+                } else if (image(i, j, k) == 0 && image(i, j + 1, k) == 255) {
+                    new_image(i, j + 1, k) = 0;
+                }
+            }
+        }
+    }
+
+    // Check for horizontal edges between adjacent pixels and modify the new image accordingly
+    for (int i = 0; i < image.height - 1; i++) {
+        for (int j = 0; j < image.width - 1; j++) {
+            for (int k = 0; k < 3; k++) {
+                if (image(j, i, k) == 255 && image(j + 1, i, k) == 0) {
+                    new_image(j + 1, i, k) = 0;
+                } else if (image(j, i, k) == 0 && image(j + 1, i, k) == 255) {
+                    new_image(j + 1, i, k) = 0;
+                }
+            }
+        }
+    }
+
+    // Return the newly created image with detected edges
+    return new_image;
+}
+Image& Merge_Images(string filename1, string filename2) {
+    // Load the first and second images from the given filenames
+    Image First_Image(filename1);
+    Image second_Image(filename2);
+
+    // Check if the dimensions of the two images are different
+    if (First_Image.width != second_Image.width && First_Image.height != second_Image.height) {
+        int choice;
+        // Prompt the user to choose the merging method based on the image dimensions
+        cout << "(1) Resize the smaller image or both images to the largest dimensions and then merge\n";
+        cout << "(2) Merge the common area of the smaller width and height\n";
+        cout << "Choose 1 or 2: ";
+        // Read and validate the user's choice
+        cin >> choice;
+        choice = choice_validation(choice, 2, cin);
+        // Apply the chosen merging strategy
+        if (choice == 1) {
+            // Resize both images to the larger dimensions
+            Image First_Image_edit = resizeImage(filename1, max(First_Image.width, second_Image.width), max(First_Image.height, second_Image.height));
+            Image second_Image_edit = resizeImage(filename2, max(First_Image.width, second_Image.width), max(First_Image.height, second_Image.height));
+            // Create a new image to store the merged result
+            static Image New_Image(First_Image.width, First_Image.height);
+            // Merge the resized images by averaging pixel values
+            for (int i = 0; i < New_Image.width; ++i) {
+                for (int j = 0; j < New_Image.height; ++j) {
+                    New_Image(i, j, 0) = (First_Image_edit(i, j, 0) + second_Image_edit(i, j, 0)) / 2.0;
+                    New_Image(i, j, 1) = (First_Image_edit(i, j, 1) + second_Image_edit(i, j, 1)) / 2.0;
+                    New_Image(i, j, 2) = (First_Image_edit(i, j, 2) + second_Image_edit(i, j, 2)) / 2.0;
+                }
+            }
+            // Return the merged image
+            return New_Image;
+        } else if (choice == 2) {
+            // Resize both images to the smaller dimensions
+            Image First_Image_edit = resizeImage(filename1, min(First_Image.width, second_Image.width), min(First_Image.height, second_Image.height));
+            Image second_Image_edit = resizeImage(filename2, min(First_Image.width, second_Image.width), min(First_Image.height, second_Image.height));
+            // Create a new image to store the merged result
+            static Image New_Image(First_Image_edit.width, First_Image_edit.height);
+            // Merge the resized images by averaging pixel values
+            for (int i = 0; i < New_Image.width; ++i) {
+                for (int j = 0; j < New_Image.height; ++j) {
+                    New_Image(i, j, 0) = (First_Image_edit(i, j, 0) + second_Image_edit(i, j, 0)) / 2.0;
+                    New_Image(i, j, 1) = (First_Image_edit(i, j, 1) + second_Image_edit(i, j, 1)) / 2.0;
+                    New_Image(i, j, 2) = (First_Image_edit(i, j, 2) + second_Image_edit(i, j, 2)) / 2.0;
+                }
+            }
+            // Return the merged image
+            return New_Image;
+        }
+    }
+    // Create a new image to store the merged result with the same dimensions for any one of the two images because this will be excuted in the case of the equality of the dimensions of the two images
+    static Image New_Image(First_Image.width, First_Image.height);
+    // Merge the original images by averaging pixel values
+    for (int i = 0; i < New_Image.width; ++i) {
+        for (int j = 0; j < New_Image.height; ++j) {
+            New_Image(i, j, 0) = (First_Image(i, j, 0) + second_Image(i, j, 0)) / 2.0;
+            New_Image(i, j, 1) = (First_Image(i, j, 1) + second_Image(i, j, 1)) / 2.0;
+            New_Image(i, j, 2) = (First_Image(i, j, 2) + second_Image(i, j, 2)) / 2.0;
+        }
+    }
+    // Return the merged image
+    return New_Image;
+}
+Image Purple_Image(string filename) {
+    // Load the image from the specified filename
+    Image Purple(filename);
+    // Iterate over each pixel in the image
+    for (int i = 0; i < Purple.width; ++i) {
+        for (int j = 0; j < Purple.height; ++j) {
+            // Scale the green component of each pixel by multiplying it with 0.7 (70%)
+            Purple(i, j, 1) = 0.7 * Purple(i, j, 1);
+            // Note: The green channel (index 1) is decreased to enhance the purple color
+        }
+    }
+    // Return the modified image with enhanced purple color
+    return Purple;
+}
+
+
 
