@@ -1,17 +1,14 @@
-// File: CS112_A3_Part1_S1_20230255_20230373_20230708
+// File: CS112_A3_Part1_S1_20230255_20230373
 // Purpose: this is a program that make some of filters on the image based on the user choice
 /* Authors:  omar sayed saied ==> S1
             mahmoud abdelnaby abdalalim ==> S1
-            Khalaf Allah Muzamil Khalaf Allah ==> S1
 */
 /* Emails:
     11410120230255@stud.cu.edu.eg
     11410120230373@stud.cu.edu.eg
-    11410120230708@stud.cu.edu.eg
 */
 // ID1: 20230255 - do {grayscale onversion filter,Dark and light filter,Detect Image Edges,Merge,Purple}
-// ID2: 20230373 - do {Black and white filter,flip Horizontal and vertical filter,Resize,Crop}
-// ID3: 20230708 - do {inverse filter}
+// ID2: 20230373 - do {Black and white filter,inverse filter,flip Horizontal and vertical filter,Resize,Crop,sunlight,infrared}
 #include <iostream>
 #include "Image_Class.h"
 #include<cstring>
@@ -27,10 +24,12 @@ Image flip_vertical(string filename);
 Image Darken_Image(string filename);
 Image light_Image(string filename);
 Image resizeImage( string filename, int newWidth, int newHeight);
-Image crop_image(string filename, int X, int Y, int cropWidth, int cropHeight);
+Image crop_image(string filename);
 Image Detect_Image_Edges(string filename);
 Image& Merge_Images(string filename1 ,string filename2 );
 Image Purple_Image(string filename);
+Image sunlight_Image(string filename);
+Image infraredImage(string filename);
 
 string loading_image_validation(string image_name,Image image){
     while(true) {           // Loop to handle invalid input for image loading
@@ -41,6 +40,19 @@ string loading_image_validation(string image_name,Image image){
                 }
             }
             catch(const invalid_argument& e) {     // Catching exception if image loading fails
+                cout << "Invalid Input. Please enter a valid name for the image : ";     // make user enter a correct input
+                cin >> image_name;      // Taking input again
+            }
+        }
+}
+ string& saving_image_validation(string& image_name,Image& image){
+    while(true) {           // Loop to handle invalid input for image loading
+            try {
+                if(image.saveImage(image_name)) {    // Checking if image saving was successful
+                    return image_name;
+                }
+            }
+            catch(const invalid_argument& e) {     // Catching exception if image saving fails
                 cout << "Invalid Input. Please enter a valid name for the image : ";     // make user enter a correct input
                 cin >> image_name;      // Taking input again
             }
@@ -67,6 +79,21 @@ int choice_validation(int choice, int limit, istream& cin) {
     }
     return choice;
 }
+// Function to validate user input choice
+int crop_validation(int num, int limit, istream& cin) {
+    while(true) {
+        if (cin.fail() || num > limit ) {
+            cin.clear();                    // Clearing the error flag
+            cin.ignore(INT_MAX, '\n');      // Ignoring any extra characters in the input buffer
+            cout << "Invalid Input.Please Enter Number from 0 to " << limit << " : ";
+            cin >> num;
+        } else {
+            cin.ignore();           // Ignoring newline character
+            break;
+        }
+    }
+    return num;
+}
 int main() {
     string image_name, new_image_name;
     int filter_choice = 0, save_choice = 0;
@@ -90,11 +117,13 @@ int main() {
         cout << "8)Crop images\n";
         cout << "9)Detect Image Edges\n";
         cout << "10)Merge Images\n";
-        cout << "11)Purple_Image\n";
-        cout << "12)Exit\n";
-        cout << "Choose from 1 to 12: ";
+        cout << "11)Purple Image\n";
+        cout << "12)sunlight Image\n";
+        cout << "13)the world in infrared photography Image\n";
+        cout << "14)Exit\n";
+        cout << "Choose from 1 to 14: ";
         cin >> filter_choice;       // Getting user's filter choice
-        filter_choice = choice_validation(filter_choice, 12, cin); // Validating the choice
+        filter_choice = choice_validation(filter_choice, 14, cin); // Validating the choice
         if(filter_choice == 1){
             cout << "Please enter Your image that you want to Edit it : ";
             cin >> image_name;      // Asking user for the image name
@@ -114,8 +143,7 @@ int main() {
                 cout << "Please enter image name to store new image\n";
                 cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
                 cin >> new_image_name;  // Getting the name for the new image
-                //save_image_validation( new_image_name,grayscale_Conversion);
-                grayscale_Conversion.saveImage(new_image_name);    // Saving the edited image
+                new_image_name = saving_image_validation(new_image_name,grayscale_Conversion);
               (void)system(new_image_name.c_str()); // To show the image without searching for it
             }
         }
@@ -130,9 +158,7 @@ int main() {
                 cout << "Please enter image name to store new image\n";
                 cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
                 cin >> new_image_name;  // Getting the name for the new image
-                //save_image_validation( new_image_name,black_and_White);
-                black_and_White.saveImage(new_image_name);    // Saving the edited image
-
+                new_image_name = saving_image_validation(new_image_name,black_and_White);
                  (void)system(new_image_name.c_str());// To show the image without searching for it
             }
         }
@@ -147,8 +173,7 @@ int main() {
                 cout << "Please enter image name to store new image\n";
                 cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
                 cin >> new_image_name;  // Getting the name for the new image
-                //save_image_validation( new_image_name,invert_Image);
-                invert_Image.saveImage(new_image_name);    // Saving the edited image
+                new_image_name = saving_image_validation(new_image_name,invert_Image);
               (void)system(new_image_name.c_str());// To show the image without searching for it
             }
         }
@@ -170,8 +195,7 @@ int main() {
                     cout << "Please enter image name to store new image\n";
                     cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
                     cin >> new_image_name;  // Getting the name for the new image
-                    //save_image_validation( new_image_name,round_Image);
-                    round_Image.saveImage(new_image_name);    // Saving the edited image
+                   new_image_name = saving_image_validation(new_image_name,round_Image);
                      (void)system(new_image_name.c_str()); // To show the image without searching for it
                 }
             }
@@ -185,8 +209,7 @@ int main() {
                     cout << "Please enter image name to store new image\n";
                     cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
                     cin >> new_image_name;  // Getting the name for the new image
-                    //save_image_validation( new_image_name,round_Image2);
-                    round_Image2.saveImage(new_image_name);   // Saving the edited image
+                   new_image_name = saving_image_validation(new_image_name,round_Image2);
                   (void)system(new_image_name.c_str());// To show the image without searching for it
                 }
             }
@@ -209,8 +232,7 @@ int main() {
                     cout << "Please enter image name to store new image\n";
                     cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
                     cin >> new_image_name;  // Getting the name for the new image
-                    //save_image_validation( new_image_name,dark);
-                    dark.saveImage(new_image_name); // Saving the edited image
+                   new_image_name = saving_image_validation(new_image_name,dark);
                   (void)system(new_image_name.c_str());// To show the image without searching for it
                 }
             }
@@ -224,8 +246,7 @@ int main() {
                     cout << "Please enter image name to store new image\n";
                     cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
                     cin >> new_image_name;  // Getting the name for the new image
-                    //save_image_validation( new_image_name,light);
-                    light.saveImage(new_image_name);    // Saving the edited image
+                   new_image_name = saving_image_validation(new_image_name,light);
                   (void)system(new_image_name.c_str()); // To show the image without searching for it
                 }
             }
@@ -236,8 +257,8 @@ int main() {
             cin >> w;
             cout<< "input the new height : ";
             cin >> h;
-            // Applying Grayscale Conversion filter
-            Image grayscale_Conversion = resizeImage(image_name, w, h);
+            // Applying resize filter
+            Image resize_image = resizeImage(image_name, w, h);
             // Asking user if they want to save the edited image
             cout << "Do you want to save it or not?\n1)Save\n2)Not\nChoose 1 or 2: ";
             cin >> save_choice;     // Getting user's choice
@@ -246,23 +267,13 @@ int main() {
                 cout << "Please enter image name to store new image\n";
                 cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
                 cin >> new_image_name;  // Getting the name for the new image
-                //save_image_validation( new_image_name,grayscale_Conversion);
-                grayscale_Conversion.saveImage(new_image_name);    // Saving the edited image
-              (void)system(new_image_name.c_str()); // To show the image without searching for it
+                new_image_name = saving_image_validation(new_image_name,resize_image);
+                (void)system(new_image_name.c_str()); // To show the image without searching for it
             }
         }
         else if(filter_choice == 8) {
-            int w,h,x,y;
-            cout << "input x : ";
-            cin >> x;
-            cout<< "input y : ";
-            cin >> y;
-            cout << "input the new width : ";
-            cin >> w;
-            cout<< "input the new height : ";
-            cin >> h;
-            // Applying Grayscale Conversion filter
-            Image grayscale_Conversion = crop_image(image_name,x ,y , w, h);
+            // Applying crop filter
+            Image crop = crop_image(image_name);
             // Asking user if they want to save the edited image
             cout << "Do you want to save it or not?\n1)Save\n2)Not\nChoose 1 or 2: ";
             cin >> save_choice;     // Getting user's choice
@@ -271,8 +282,7 @@ int main() {
                 cout << "Please enter image name to store new image\n";
                 cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
                 cin >> new_image_name;  // Getting the name for the new image
-                //save_image_validation( new_image_name,grayscale_Conversion);
-                grayscale_Conversion.saveImage(new_image_name);    // Saving the edited image
+               new_image_name = saving_image_validation(new_image_name,crop);
               (void)system(new_image_name.c_str()); // To show the image without searching for it
             }
         }
@@ -287,8 +297,7 @@ int main() {
                 cout << "Please enter image name to store new image\n";
                 cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
                 cin >> new_image_name;  // Getting the name for the new image
-                //save_image_validation( new_image_name,grayscale_Conversion);
-                Detect_image.saveImage(new_image_name);    // Saving the edited image
+                new_image_name = saving_image_validation(new_image_name,Detect_image);
               (void)system(new_image_name.c_str()); // To show the image without searching for it
             }
         }
@@ -307,13 +316,12 @@ int main() {
                 cout << "Please enter image name to store new image\n";
                 cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
                 cin >> new_image_name;  // Getting the name for the new image
-                //save_image_validation( new_image_name,grayscale_Conversion);
-                Merge.saveImage(new_image_name);    // Saving the edited image
+                new_image_name = saving_image_validation(new_image_name,Merge);
               (void)system(new_image_name.c_str()); // To show the image without searching for it
             }
         }
         else if(filter_choice == 11) {
-            // Applying Grayscale Conversion filter
+            // Applying purple filter
             Image Purple = Purple_Image(image_name);
             // Asking user if they want to save the edited image
             cout << "Do you want to save it or not?\n1)Save\n2)Not\nChoose 1 or 2: ";
@@ -323,12 +331,41 @@ int main() {
                 cout << "Please enter image name to store new image\n";
                 cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
                 cin >> new_image_name;  // Getting the name for the new image
-                //save_image_validation( new_image_name,grayscale_Conversion);
-                Purple.saveImage(new_image_name);    // Saving the edited image
+                new_image_name = saving_image_validation(new_image_name,Purple);
               (void)system(new_image_name.c_str()); // To show the image without searching for it
             }
         }
-        else if (filter_choice == 12){
+        else if(filter_choice == 12) {
+            // Applying Sunlight filter
+            Image sunlight = sunlight_Image(image_name);
+            // Asking user if they want to save the edited image
+            cout << "Do you want to save it or not?\n1)Save\n2)Not\nChoose 1 or 2: ";
+            cin >> save_choice;     // Getting user's choice
+            save_choice = choice_validation(save_choice, 2, cin); // Validating the choice
+            if(save_choice == 1) {  // If user chooses to save
+                cout << "Please enter image name to store new image\n";
+                cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
+                cin >> new_image_name;  // Getting the name for the new image
+                new_image_name = saving_image_validation(new_image_name,sunlight);
+              (void)system(new_image_name.c_str()); // To show the image without searching for it
+            }
+        }
+        else if(filter_choice == 13) {
+            // Applying infrared filter
+            Image infrared = infraredImage(image_name);
+            // Asking user if they want to save the edited image
+            cout << "Do you want to save it or not?\n1)Save\n2)Not\nChoose 1 or 2: ";
+            cin >> save_choice;     // Getting user's choice
+            save_choice = choice_validation(save_choice, 2, cin); // Validating the choice
+            if(save_choice == 1) {  // If user chooses to save
+                cout << "Please enter image name to store new image\n";
+                cout << "and specify extension (.jpg, .bmp, .png, .tga): ";
+                cin >> new_image_name;  // Getting the name for the new image
+                new_image_name = saving_image_validation(new_image_name,infrared);
+              (void)system(new_image_name.c_str()); // To show the image without searching for it
+            }
+        }
+        else if (filter_choice == 14){
             cout << "\"Thank you for using our program\"";
             break;
         }
@@ -495,22 +532,30 @@ Image resizeImage( string filename, int newWidth, int newHeight) {
     }
     return resizedImage;
 }
-Image crop_image(string filename, int X, int Y, int cropWidth, int cropHeight) {
+Image crop_image(string filename) {
     Image image(filename);  // Create an image object with the provided filename
-    Image cropped(cropWidth, cropHeight);  // Create a new image object to store the cropped image
-
-    // Calculate the top-left corner coordinates for cropping
-
-
+    int cropWidth,cropHeight,x,y;
+    cout << "input x : ";
+    cin >> x;
+    x = crop_validation(x,image.width,cin);
+    cout<< "input y : ";
+    cin >> y;
+    y = crop_validation(y,image.height,cin);
+    cout << "input the new width : ";
+    cin >> cropWidth;
+    cropWidth = crop_validation(cropWidth,image.width - x,cin);
+    cout<< "input the new height : ";
+    cin >> cropHeight;
+    cropHeight = crop_validation(cropHeight,image.height - y,cin);
+    Image cropped(cropWidth, cropHeight);
     // Copy the specified portion of the image
     for (int i =0 ; i < cropWidth; ++i) {
         for (int j = 0; j < cropHeight; ++j) {
             for (int k = 0; k < 3; ++k) {
-                cropped(i, j, k) = image(X + i, Y + j, k);
+                cropped(i, j, k) = image(x + i, y + j, k);
             }
         }
     }
-
     return cropped;  // Return the cropped image
 }
 Image Detect_Image_Edges(string filename) {
@@ -580,7 +625,7 @@ Image& Merge_Images(string filename1, string filename2) {
             Image First_Image_edit = resizeImage(filename1, max(First_Image.width, second_Image.width), max(First_Image.height, second_Image.height));
             Image second_Image_edit = resizeImage(filename2, max(First_Image.width, second_Image.width), max(First_Image.height, second_Image.height));
             // Create a new image to store the merged result
-            static Image New_Image(First_Image.width, First_Image.height);
+            static Image New_Image(First_Image_edit.width, First_Image_edit.height);
             // Merge the resized images by averaging pixel values
             for (int i = 0; i < New_Image.width; ++i) {
                 for (int j = 0; j < New_Image.height; ++j) {
@@ -636,6 +681,32 @@ Image Purple_Image(string filename) {
     // Return the modified image with enhanced purple color
     return Purple;
 }
-
+Image sunlight_Image(string filename) {
+    // Load the image from the specified filename
+    Image sunlight(filename);
+    // Iterate over each pixel in the image
+    for (int i = 0; i < sunlight.width; ++i) {
+        for (int j = 0; j < sunlight.height; ++j) {
+            // Scale the blue component of each pixel by multiplying it with 0.7 (70%)
+            sunlight(i, j, 2) = 0.7 * sunlight(i, j, 2);
+            // Note: The blue channel (index 2) is decreased to enhance the yellow color
+        }
+    }
+    // Return the modified image with enhanced purple color
+    return sunlight;
+}
+Image infraredImage(string filename){
+    Image image(filename);  // Create an image object with the provided filename
+    // Loop through each pixel in the image
+    for (int i = 0; i < image.width; ++i) {
+        for (int j = 0; j < image.height; ++j) {
+            // Invert each color channel by subtracting its value from 255
+            image(i, j, 0) = 255;
+            image(i, j, 1) = 255 - image(i, j, 1);
+            image(i, j, 2) = 255 - image(i, j, 2);
+        }
+    }
+    return image;   // Return the inverted image
+}
 
 
